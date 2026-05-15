@@ -1,0 +1,172 @@
+<div style="background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem;">
+
+  <!-- App header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 32px; height: 32px; border-radius: var(--border-radius-md); background: var(--color-background-info); display: flex; align-items: center; justify-content: center;">
+        <i class="ti ti-flame" style="font-size: 18px; color: var(--color-text-info);" aria-hidden="true"></i>
+      </div>
+      <div>
+        <div style="font-size: 15px; font-weight: 500;">LeanPath</div>
+        <div style="font-size: 12px; color: var(--color-text-secondary);">Tuesday, May 15</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 6px;">
+      <button style="width: 36px; padding: 0;" aria-label="Notifications"><i class="ti ti-bell" style="font-size: 16px;" aria-hidden="true"></i></button>
+      <button style="width: 36px; padding: 0;" aria-label="Settings"><i class="ti ti-settings" style="font-size: 16px;" aria-hidden="true"></i></button>
+    </div>
+  </div>
+
+  <!-- Hero ring + key numbers -->
+  <div style="background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1.25rem; margin-bottom: 12px;">
+    <div style="display: flex; align-items: center; gap: 1.25rem;">
+      <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink: 0;" role="img" aria-label="Calorie budget ring at 71 percent">
+        <circle cx="70" cy="70" r="58" fill="none" stroke="var(--color-background-secondary)" stroke-width="12"/>
+        <circle cx="70" cy="70" r="58" fill="none" stroke="#1D9E75" stroke-width="12" stroke-linecap="round"
+                stroke-dasharray="364.4" stroke-dashoffset="105.7" transform="rotate(-90 70 70)"/>
+        <text x="70" y="68" text-anchor="middle" class="t" style="font-size: 26px; font-weight: 500; fill: var(--color-text-primary);">1,290</text>
+        <text x="70" y="86" text-anchor="middle" class="ts" style="font-size: 12px; fill: var(--color-text-secondary);">of 1,820 kcal</text>
+      </svg>
+      <div style="flex: 1;">
+        <div style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px;">Today's budget</div>
+        <div style="font-size: 22px; font-weight: 500; margin-bottom: 12px;">530 kcal left</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+          <div>
+            <div style="font-size: 11px; color: var(--color-text-secondary);">Eaten</div>
+            <div style="font-size: 14px; font-weight: 500;">1,290</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: var(--color-text-secondary);">Burned</div>
+            <div style="font-size: 14px; font-weight: 500;">+340</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: var(--color-text-secondary);">Deficit</div>
+            <div style="font-size: 14px; font-weight: 500; color: #0F6E56;">−870</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Macro split -->
+  <div style="background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1rem 1.25rem; margin-bottom: 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <div style="font-size: 14px; font-weight: 500;">Macros</div>
+      <div style="font-size: 12px; color: var(--color-text-secondary);">P 92g · C 138g · F 41g</div>
+    </div>
+    <div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--color-background-secondary);">
+      <div style="width: 28%; background: #378ADD;"></div>
+      <div style="width: 43%; background: #1D9E75;"></div>
+      <div style="width: 19%; background: #EF9F27;"></div>
+    </div>
+    <div style="display: flex; gap: 16px; margin-top: 8px; font-size: 12px; color: var(--color-text-secondary);">
+      <span><span style="display:inline-block; width:8px; height:8px; background:#378ADD; border-radius:2px; vertical-align:middle; margin-right:6px;"></span>Protein</span>
+      <span><span style="display:inline-block; width:8px; height:8px; background:#1D9E75; border-radius:2px; vertical-align:middle; margin-right:6px;"></span>Carbs</span>
+      <span><span style="display:inline-block; width:8px; height:8px; background:#EF9F27; border-radius:2px; vertical-align:middle; margin-right:6px;"></span>Fat</span>
+    </div>
+  </div>
+
+  <!-- Goal projection -->
+  <div style="background: var(--color-background-info); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+      <div>
+        <div style="font-size: 12px; color: #0C447C; margin-bottom: 2px;">Projected goal date</div>
+        <div style="font-size: 18px; font-weight: 500; color: #042C53;">August 12, 2026</div>
+        <div style="font-size: 12px; color: #185FA5; margin-top: 2px;">~89 days · −0.75 lb / week pace</div>
+      </div>
+      <div style="background: #B5D4F4; color: #042C53; font-size: 11px; padding: 4px 10px; border-radius: var(--border-radius-md); font-weight: 500;">on track</div>
+    </div>
+    <div style="margin-top: 14px;">
+      <div style="display: flex; justify-content: space-between; font-size: 11px; color: #185FA5; margin-bottom: 6px;">
+        <span>185 lb today</span>
+        <span>165 lb goal</span>
+      </div>
+      <div style="height: 6px; background: #B5D4F4; border-radius: 3px; overflow: hidden;">
+        <div style="width: 42%; height: 100%; background: #185FA5;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick log row -->
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;">
+    <button style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px; background: var(--color-background-primary);">
+      <i class="ti ti-camera" style="font-size: 20px;" aria-hidden="true"></i>
+      <span style="font-size: 11px;">Snap meal</span>
+    </button>
+    <button style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px; background: var(--color-background-primary);">
+      <i class="ti ti-message" style="font-size: 20px;" aria-hidden="true"></i>
+      <span style="font-size: 11px;">Describe</span>
+    </button>
+    <button style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px; background: var(--color-background-primary);">
+      <i class="ti ti-search" style="font-size: 20px;" aria-hidden="true"></i>
+      <span style="font-size: 11px;">Search</span>
+    </button>
+    <button style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px; background: var(--color-background-primary);">
+      <i class="ti ti-barcode" style="font-size: 20px;" aria-hidden="true"></i>
+      <span style="font-size: 11px;">Scan</span>
+    </button>
+  </div>
+
+  <!-- Today's meals -->
+  <div style="background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1rem 1.25rem; margin-bottom: 12px;">
+    <div style="font-size: 14px; font-weight: 500; margin-bottom: 12px;">Today's meals</div>
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary);">
+      <div style="width: 36px; height: 36px; border-radius: var(--border-radius-md); background: #FAEEDA; display: flex; align-items: center; justify-content: center;">
+        <i class="ti ti-sun" style="font-size: 18px; color: #854F0B;" aria-hidden="true"></i>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 13px; font-weight: 500;">Breakfast</div>
+        <div style="font-size: 12px; color: var(--color-text-secondary);">Greek yogurt, berries, granola</div>
+      </div>
+      <div style="font-size: 13px; font-weight: 500;">320</div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary);">
+      <div style="width: 36px; height: 36px; border-radius: var(--border-radius-md); background: #E1F5EE; display: flex; align-items: center; justify-content: center;">
+        <i class="ti ti-bowl" style="font-size: 18px; color: #0F6E56;" aria-hidden="true"></i>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 13px; font-weight: 500;">Lunch <span style="font-size: 10px; background: var(--color-background-info); color: var(--color-text-info); padding: 1px 6px; border-radius: 4px; margin-left: 4px;">AI</span></div>
+        <div style="font-size: 12px; color: var(--color-text-secondary);">Chicken caesar salad (photo)</div>
+      </div>
+      <div style="font-size: 13px; font-weight: 500;">540</div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0;">
+      <div style="width: 36px; height: 36px; border-radius: var(--border-radius-md); background: #EEEDFE; display: flex; align-items: center; justify-content: center;">
+        <i class="ti ti-cookie" style="font-size: 18px; color: #3C3489;" aria-hidden="true"></i>
+      </div>
+      <div style="flex: 1;">
+        <div style="font-size: 13px; font-weight: 500;">Snack</div>
+        <div style="font-size: 12px; color: var(--color-text-secondary);">Apple, almonds, coffee</div>
+      </div>
+      <div style="font-size: 13px; font-weight: 500;">430</div>
+    </div>
+  </div>
+
+  <!-- Activity -->
+  <div style="background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1rem 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <div style="font-size: 14px; font-weight: 500;">Activity</div>
+      <button style="padding: 4px 10px; font-size: 12px;"><i class="ti ti-plus" style="font-size: 12px; vertical-align: -1px; margin-right: 4px;" aria-hidden="true"></i>Add workout</button>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+      <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px;">
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px;">
+          <i class="ti ti-walk" style="font-size: 14px;" aria-hidden="true"></i> Steps
+        </div>
+        <div style="font-size: 18px; font-weight: 500;">7,842</div>
+        <div style="font-size: 11px; color: var(--color-text-secondary);">~210 kcal</div>
+      </div>
+      <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px;">
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px;">
+          <i class="ti ti-barbell" style="font-size: 14px;" aria-hidden="true"></i> Workouts
+        </div>
+        <div style="font-size: 18px; font-weight: 500;">1</div>
+        <div style="font-size: 11px; color: var(--color-text-secondary);">30-min strength · 130 kcal</div>
+      </div>
+    </div>
+  </div>
+
+</div>
