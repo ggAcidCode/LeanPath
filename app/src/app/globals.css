@@ -1,41 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap');
 
 :root {
-  /* Brand palette */
-  --lp-teal: #1D9E75;
-  --lp-teal-light: #2CC295;
-  --lp-teal-dark: #0F6E56;
-  --lp-teal-glow: rgba(29, 158, 117, 0.15);
-  --lp-blue: #378ADD;
-  --lp-blue-light: #B5D4F4;
-  --lp-blue-bg: #EBF4FD;
-  --lp-blue-dark: #042C53;
-  --lp-amber: #EF9F27;
-  --lp-amber-bg: #FAEEDA;
-  --lp-purple: #7C6EF6;
-  --lp-purple-bg: #EEEDFE;
-  --lp-red: #E74C5E;
-  --lp-red-bg: #FDEDEF;
+  /* Vibrant Kinetic Theme */
+  --lp-teal: #00e292;
+  --lp-teal-light: #22ffa7;
+  --lp-teal-dark: #006d44;
+  --lp-teal-glow: rgba(0, 226, 146, 0.15);
+  --lp-blue: #4c49ee;
+  --lp-blue-light: #c1c1ff;
+  --lp-blue-bg: #222a3d;
+  --lp-blue-dark: #09006b;
+  --lp-amber: #ff7f1c;
+  --lp-amber-bg: #2d3449;
+  --lp-purple: #c1c1ff;
+  --lp-purple-bg: #222a3d;
+  --lp-red: #ffb4ab;
+  --lp-red-bg: #93000a;
 
   /* Surfaces */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F6F8FA;
-  --bg-tertiary: #EEF1F5;
-  --bg-elevated: #FFFFFF;
-  --bg-glass: rgba(255, 255, 255, 0.72);
-  --surface-border: rgba(0, 0, 0, 0.06);
+  --bg-primary: #0b1326;
+  --bg-secondary: #060e20;
+  --bg-tertiary: #131b2e;
+  --bg-elevated: #171f33;
+  --bg-glass: rgba(23, 31, 51, 0.8);
+  --surface-border: #2d3449;
 
   /* Text */
-  --text-primary: #0F1419;
-  --text-secondary: #5B6570;
-  --text-tertiary: #8899A6;
-  --text-inverse: #FFFFFF;
+  --text-primary: #dae2fd;
+  --text-secondary: #b9cbbd;
+  --text-tertiary: #849588;
+  --text-inverse: #003921;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 0 24px rgba(29, 158, 117, 0.2);
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 12px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(0, 226, 146, 0.2);
 
   /* Radii */
   --radius-sm: 8px;
@@ -43,6 +43,10 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
+
+  /* Fonts */
+  --font-heading: 'Sora', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
 
   /* Transitions */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -59,13 +63,17 @@
 }
 
 html, body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-secondary);
+  font-family: var(--font-body);
+  background: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100dvh;
   overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .heading {
+  font-family: var(--font-heading);
 }
 
 /* ── Utility classes ── */

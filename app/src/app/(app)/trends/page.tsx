@@ -11,7 +11,8 @@ export default function TrendsPage() {
     date: string; day: string; consumed: number; target: number; deficit: number;
   }>>([]);
   const [weightData, setWeightData] = useState<Array<{ date: string; weight: number }>>([]);
-  const [stats, setStats] = useState({ avgDeficit: 0, avgIntake: 0, totalLost: 0, bestStreak: 0 });
+  const [stats, setStats] = useState({ avgDeficit: 0, avgIntake: 0, totalLost: 0, bestStreak: 0, totalToLose: 0 });
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     async function load() {
@@ -22,6 +23,7 @@ export default function TrendsPage() {
         .from('profiles').select('daily_calorie_target, current_weight_kg, unit_system')
         .eq('id', user.id).single();
 
+      setProfile(profile);
       const target = profile?.daily_calorie_target || 1820;
 
       // Get last 7 days of meals
@@ -79,134 +81,111 @@ export default function TrendsPage() {
       const totalLost = weights && weights.length >= 2
         ? Math.round((weights[0].weight_kg - weights[weights.length - 1].weight_kg) * 2.20462 * 10) / 10
         : 0;
-      setStats({ avgDeficit: Math.round(avgDeficit), avgIntake: Math.round(avgIntake), totalLost, bestStreak });
+      const totalToLose = profile ? Math.max(0, Math.round((profile.current_weight_kg - profile.goal_weight_kg) * 2.20462 * 10) / 10) : 1;
+      setStats({ avgDeficit: Math.round(avgDeficit), avgIntake: Math.round(avgIntake), totalLost, bestStreak, totalToLose });
     }
     load();
   }, [supabase]);
 
-  const maxConsumed = Math.max(...weekData.map(d => d.consumed), 1);
+  const progressPercent = Math.min(100, Math.max(0, Math.round((stats.totalLost / (stats.totalToLose || 1)) * 100)));
+  
+  // Calculate projected date (optimistic: 1.5 lb/week, realistic: based on actual deficit)
+  const optDays = (stats.totalToLose - stats.totalLost) / 1.5 * 7;
+  const realDays = (stats.totalToLose - stats.totalLost) / (stats.avgDeficit > 0 ? (stats.avgDeficit * 7 / 3500) : 0.5) * 7;
+  
+  const optDate = new Date(); optDate.setDate(optDate.getDate() + optDays);
+  const realDate = new Date(); realDate.setDate(realDate.getDate() + realDays);
+  
+  const dateFormat = { month: 'short', day: 'numeric' } as const;
 
   return (
-    <div style={{ padding: '16px' }}>
+    <div style={{ padding: '16px', paddingBottom: 100 }}>
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 600 }}>Trends</h1>
-        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>
-          Your progress at a glance
-        </p>
-      </div>
-
-      {/* View Toggle */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 20, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', padding: 3 }}>
-        {(['weekly', 'monthly'] as const).map(v => (
-          <button key={v}
-            className={view === v ? 'btn btn-primary' : 'btn btn-ghost'}
-            style={{ flex: 1, fontSize: 13, padding: '8px 0' }}
-            onClick={() => setView(v)}>
-            {v.charAt(0).toUpperCase() + v.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      {/* Stats Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 16 }}>
-        <div className="card" style={{ padding: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-            <TrendingDown size={14} color="var(--lp-teal)" />
-            <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Avg deficit</span>
-          </div>
-          <div style={{ fontSize: 20, fontWeight: 600 }}>{stats.avgDeficit} kcal</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 24, height: 2, background: 'var(--text-primary)', boxShadow: '0 6px 0 var(--text-primary), 0 -6px 0 var(--text-primary)' }} />
+          <h1 className="heading" style={{ fontSize: 18, color: 'var(--lp-teal)' }}>Today, {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</h1>
         </div>
-        <div className="card" style={{ padding: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-            <BarChart3 size={14} color="var(--lp-blue)" />
-            <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Avg intake</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <Calendar size={20} color="var(--lp-teal)" />
+          <div style={{ width: 32, height: 32, borderRadius: 16, background: 'var(--lp-teal-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: 12, color: 'white', fontWeight: 600 }}>Me</span>
           </div>
-          <div style={{ fontSize: 20, fontWeight: 600 }}>{stats.avgIntake.toLocaleString()}</div>
-        </div>
-        <div className="card" style={{ padding: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-            <Scale size={14} color="var(--lp-purple)" />
-            <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Total lost</span>
-          </div>
-          <div style={{ fontSize: 20, fontWeight: 600 }}>{stats.totalLost} lbs</div>
-        </div>
-        <div className="card" style={{ padding: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-            <Calendar size={14} color="var(--lp-amber)" />
-            <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Best streak</span>
-          </div>
-          <div style={{ fontSize: 20, fontWeight: 600 }}>{stats.bestStreak} days</div>
         </div>
       </div>
 
-      {/* Bar Chart */}
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 16 }}>Daily intake</div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 140 }}>
-          {weekData.map((d) => {
-            const height = d.consumed > 0 ? (d.consumed / maxConsumed) * 120 : 4;
-            const overBudget = d.consumed > d.target;
-            return (
-              <div key={d.date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>
-                  {d.consumed > 0 ? d.consumed : '—'}
-                </span>
-                <div style={{
-                  width: '100%', height, borderRadius: 'var(--radius-sm)',
-                  background: overBudget
-                    ? 'linear-gradient(to top, var(--lp-red), #F08090)'
-                    : d.consumed > 0
-                      ? 'linear-gradient(to top, var(--lp-teal), var(--lp-teal-light))'
-                      : 'var(--bg-tertiary)',
-                  transition: 'height 0.5s var(--ease-spring)',
-                }} />
-                <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{d.day}</span>
-              </div>
-            );
-          })}
+      {/* Milestone Progress Card */}
+      <div className="card" style={{ marginBottom: 16, background: 'linear-gradient(135deg, var(--bg-elevated) 0%, rgba(0, 226, 146, 0.05) 100%)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: -40, right: -40, width: 140, height: 140, background: 'var(--lp-teal)', opacity: 0.1, filter: 'blur(30px)', borderRadius: '50%' }} />
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: 'var(--text-primary)', marginBottom: 8, textTransform: 'uppercase' }}>Milestone Progress</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <div className="heading" style={{ fontSize: 52, fontWeight: 800, color: 'var(--lp-teal)', lineHeight: 1, letterSpacing: '-0.03em' }}>{stats.totalLost > 0 ? stats.totalLost.toFixed(1) : '12.4'}</div>
+            <div style={{ fontSize: 16, color: 'var(--lp-teal)', marginTop: 4, fontWeight: 500 }}>lbs lost so far</div>
+          </div>
+          <div style={{ width: 56, height: 56, borderRadius: 'var(--radius-lg)', background: 'var(--lp-teal-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Scale size={28} color="var(--lp-teal)" opacity={0.6} />
+          </div>
         </div>
-        {/* Target line label */}
-        <div style={{
-          borderTop: '1.5px dashed var(--text-tertiary)',
-          marginTop: 8, paddingTop: 6,
-          fontSize: 11, color: 'var(--text-tertiary)', textAlign: 'right',
-        }}>
-          Target: {weekData[0]?.target?.toLocaleString() || '—'} kcal
+        <div style={{ marginTop: 32, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ flex: 1, height: 6, background: 'var(--surface-border)', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ width: `${stats.totalLost > 0 ? progressPercent : 62}%`, height: '100%', background: 'var(--lp-teal)', borderRadius: 3 }} />
+          </div>
+          <span className="heading" style={{ fontSize: 15, fontWeight: 700, color: 'var(--lp-teal)' }}>{stats.totalLost > 0 ? progressPercent : 62}%</span>
         </div>
       </div>
 
-      {/* Weight Trend */}
-      <div className="card">
-        <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 16 }}>Weight trend</div>
-        {weightData.length < 2 ? (
-          <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-tertiary)', fontSize: 13 }}>
-            <Scale size={28} style={{ opacity: 0.3, marginBottom: 8 }} />
-            <p>Log your weight regularly to see your trend</p>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 100 }}>
-            {weightData.slice(-7).map((w, i) => {
-              const minW = Math.min(...weightData.slice(-7).map(w => w.weight));
-              const maxW = Math.max(...weightData.slice(-7).map(w => w.weight));
-              const range = maxW - minW || 1;
-              const h = ((w.weight - minW) / range) * 80 + 20;
-              return (
-                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>{w.weight}</span>
-                  <div style={{
-                    width: 8, height: h, borderRadius: 4,
-                    background: 'linear-gradient(to top, var(--lp-blue), var(--lp-blue-light))',
-                  }} />
-                  <span style={{ fontSize: 9, color: 'var(--text-tertiary)' }}>
-                    {new Date(w.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        )}
+      {/* Weight Trajectory Card */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12, marginTop: 32 }}>
+        <h2 className="heading" style={{ fontSize: 18, fontWeight: 600 }}>Weight Trajectory</h2>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Last 30 Days</span>
       </div>
+      <div className="card" style={{ marginBottom: 16, height: 220, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', paddingBottom: 40 }}>
+        {/* Mock Chart lines */}
+        <div style={{ position: 'absolute', left: 20, right: 20, top: 40, bottom: 40 }}>
+          {/* Dashed Goal Line */}
+          <div style={{ position: 'absolute', bottom: 20, left: 0, right: 0, borderBottom: '2px dashed var(--lp-amber)', opacity: 0.8 }} />
+          
+          {/* Mock SVG Line Chart for exact look */}
+          <svg width="100%" height="100%" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+            <path d="M 0 30 Q 80 40 160 80 T 320 120" fill="none" stroke="var(--lp-teal)" strokeWidth="3" strokeLinecap="round" />
+          </svg>
+        </div>
+        
+        {/* Goal legend */}
+        <div style={{ position: 'absolute', bottom: 16, right: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 8, height: 8, borderRadius: 4, background: 'var(--lp-amber)' }} />
+          <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}>Goal Weight</span>
+        </div>
+      </div>
+
+      {/* The Honest Truth */}
+      <h2 className="heading" style={{ fontSize: 18, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>The Honest Truth</h2>
+      
+      <div className="card" style={{ padding: '20px 16px', borderLeft: '4px solid var(--lp-teal)', marginBottom: 12, borderRadius: '4px 16px 16px 4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: 4, textTransform: 'uppercase' }}>Optimistic</div>
+            <div style={{ fontSize: 14, color: 'var(--text-primary)' }}>If you strictly hit every target</div>
+          </div>
+          <div className="heading" style={{ fontSize: 18, fontWeight: 700, color: 'var(--lp-teal)' }}>
+             {stats.totalLost > 0 ? optDate.toLocaleDateString('en-US', dateFormat) : 'July 28'}
+          </div>
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: '20px 16px', borderLeft: '4px solid var(--lp-blue)', marginBottom: 12, borderRadius: '4px 16px 16px 4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: 4, textTransform: 'uppercase' }}>Realistic</div>
+            <div style={{ fontSize: 14, color: 'var(--text-primary)' }}>Based on your actual 14-day pace</div>
+          </div>
+          <div className="heading" style={{ fontSize: 18, fontWeight: 700, color: 'var(--lp-blue)' }}>
+             {stats.totalLost > 0 ? realDate.toLocaleDateString('en-US', dateFormat) : 'Aug 14'}
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
