@@ -86,7 +86,7 @@ confidence should be 0.0 to 1.0.`,
   } catch (error) {
     console.error('Photo analysis error:', error);
     return NextResponse.json(
-      { error: 'Failed to analyze photo. Please try describing your meal instead.' },
+      { error: error instanceof Error ? error.message : 'Failed to analyze photo' },
       { status: 500 }
     );
   }

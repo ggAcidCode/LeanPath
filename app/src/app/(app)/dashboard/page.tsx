@@ -78,7 +78,7 @@ export default function DashboardPage() {
         .select('*')
         .eq('user_id', user.id)
         .eq('date', today)
-        .single();
+        .maybeSingle();
       if (stepData) {
         setSteps(stepData.step_count);
         setStepCalories(calculateStepCalories(stepData.step_count, prof?.current_weight_kg || 80));

@@ -57,7 +57,7 @@ Ensure duration_min and calories_burned are integers. Choose one of "low", "mode
   } catch (error) {
     console.error('AI parse workout error:', error);
     return NextResponse.json(
-      { error: 'Failed to analyze workout. Please try manual entry.' },
+      { error: error instanceof Error ? error.message : 'Failed to analyze workout' },
       { status: 500 }
     );
   }

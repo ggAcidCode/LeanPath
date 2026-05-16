@@ -68,7 +68,7 @@ confidence should be 0.0 to 1.0, indicating how confident you are in the estimat
   } catch (error) {
     console.error('AI parse error:', error);
     return NextResponse.json(
-      { error: 'Failed to analyze meal. Please try manual entry.' },
+      { error: error instanceof Error ? error.message : 'Failed to analyze meal' },
       { status: 500 }
     );
   }
