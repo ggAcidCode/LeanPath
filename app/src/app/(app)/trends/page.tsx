@@ -20,7 +20,7 @@ export default function TrendsPage() {
       if (!user) return;
 
       const { data: profile } = await supabase
-        .from('profiles').select('daily_calorie_target, current_weight_kg, unit_system')
+        .from('profiles').select('daily_calorie_target, current_weight_kg, goal_weight_kg, unit_system')
         .eq('id', user.id).single();
 
       setProfile(profile);
