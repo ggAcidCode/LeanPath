@@ -274,16 +274,14 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Quick Log Row */}
       <div className="animate-fade-in-up stagger-4" style={{
-        display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
         gap: 8, marginBottom: 12,
       }}>
         {[
           { icon: <Camera size={20} />, label: 'Snap meal', href: '/log?method=photo' },
           { icon: <MessageSquare size={20} />, label: 'Describe', href: '/log?method=describe' },
           { icon: <Search size={20} />, label: 'Search', href: '/log?method=search' },
-          { icon: <Sparkles size={20} />, label: 'AI Log', href: '/log?method=ai' },
         ].map(({ icon, label, href }) => (
           <Link key={label} href={href} className="card" style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,

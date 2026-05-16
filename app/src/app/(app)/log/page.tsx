@@ -229,7 +229,6 @@ function LogContent() {
     { id: 'search', icon: <Search size={16} />, label: 'Search' },
     { id: 'describe', icon: <MessageSquare size={16} />, label: 'Describe' },
     { id: 'photo', icon: <Camera size={16} />, label: 'Photo' },
-    { id: 'ai', icon: <Sparkles size={16} />, label: 'AI' },
     { id: 'steps', icon: <Footprints size={16} />, label: 'Steps' },
     { id: 'workout', icon: <Dumbbell size={16} />, label: 'Workout' },
   ];
@@ -322,8 +321,8 @@ function LogContent() {
         </div>
       )}
 
-      {/* Describe / AI Tab */}
-      {(activeTab === 'describe' || activeTab === 'ai') && (
+      {/* Describe Tab */}
+      {activeTab === 'describe' && (
         <div>
           <div className="input-group" style={{ marginBottom: 16 }}>
             <label>Describe your meal</label>
@@ -401,7 +400,7 @@ function LogContent() {
                 const file = e.target.files?.[0];
                 if (!file) return;
                 setAiLoading(true);
-                setActiveTab('ai');
+                setActiveTab('describe');
                 const formData = new FormData();
                 formData.append('image', file);
                 try {
