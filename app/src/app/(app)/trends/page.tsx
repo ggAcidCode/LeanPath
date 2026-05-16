@@ -67,8 +67,10 @@ export default function TrendsPage() {
       }
 
       // Calculate stats
-      const avgIntake = days.reduce((s, d) => s + d.consumed, 0) / Math.max(1, days.filter(d => d.consumed > 0).length);
-      const avgDeficit = days.reduce((s, d) => s + d.deficit, 0) / Math.max(1, days.filter(d => d.consumed > 0).length);
+      const loggedDays = days.filter(d => d.consumed > 0);
+      const numLoggedDays = Math.max(1, loggedDays.length);
+      const avgIntake = loggedDays.length > 0 ? loggedDays.reduce((s, d) => s + d.consumed, 0) / numLoggedDays : 0;
+      const avgDeficit = loggedDays.length > 0 ? loggedDays.reduce((s, d) => s + d.deficit, 0) / numLoggedDays : 0;
       let streak = 0, bestStreak = 0;
       days.forEach(d => {
         if (d.deficit > 0 && d.consumed > 0) { streak++; bestStreak = Math.max(bestStreak, streak); }
