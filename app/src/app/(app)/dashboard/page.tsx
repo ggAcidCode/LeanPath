@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { formatDate, getTodayString, calculateStepCalories } from '@/lib/calculations';
 import {
@@ -29,6 +30,7 @@ interface WorkoutData {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const supabase = createClient();
   const today = getTodayString();
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
@@ -47,7 +49,14 @@ export default function DashboardPage() {
         .select('*')
         .eq('id', user.id)
         .single();
-      if (prof) setProfile(prof);
+      
+      if (prof) {
+        if (!prof.onboarding_complete) {
+          router.push('/onboarding');
+          return;
+        }
+        setProfile(prof);
+      }
 
       const { data: mealData } = await supabase
         .from('meal_entries')
@@ -76,7 +85,7 @@ export default function DashboardPage() {
       }
     }
     load();
-  }, [supabase, today]);
+  }, [supabase, today, router]);
 
   const target = (profile?.daily_calorie_target as number) || 1820;
   const consumed = meals.reduce((sum, m) => sum + m.total_calories, 0);

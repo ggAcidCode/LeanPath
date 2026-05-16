@@ -49,6 +49,9 @@ function LogContent() {
   const [workoutType, setWorkoutType] = useState('');
   const [workoutDuration, setWorkoutDuration] = useState('');
   const [workoutIntensity, setWorkoutIntensity] = useState<'low' | 'moderate' | 'high'>('moderate');
+  const [workoutDescription, setWorkoutDescription] = useState('');
+  const [workoutAiLoading, setWorkoutAiLoading] = useState(false);
+  const [workoutAiError, setWorkoutAiError] = useState('');
 
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -98,6 +101,31 @@ function LogContent() {
       setAiError(err instanceof Error ? err.message : 'AI analysis failed. Try manual entry.');
     } finally {
       setAiLoading(false);
+    }
+  }
+
+  async function handleAIWorkout() {
+    if (!workoutDescription.trim()) return;
+    setWorkoutAiLoading(true);
+    setWorkoutAiError('');
+
+    try {
+      const res = await fetch('/api/ai/parse-workout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: workoutDescription }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      
+      // Auto-fill the form fields from AI response
+      if (data.type) setWorkoutType(data.type);
+      if (data.duration_min) setWorkoutDuration(data.duration_min.toString());
+      if (data.intensity) setWorkoutIntensity(data.intensity);
+    } catch (err) {
+      setWorkoutAiError(err instanceof Error ? err.message : 'AI analysis failed.');
+    } finally {
+      setWorkoutAiLoading(false);
     }
   }
 
@@ -417,20 +445,33 @@ function LogContent() {
       {/* Workout Tab */}
       {activeTab === 'workout' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="card" style={{ padding: 16, marginBottom: 8, background: 'var(--lp-blue-bg)' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, fontSize: 13, color: 'var(--lp-blue)' }}>
+              <Sparkles size={14} /> Describe workout
+            </label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input className="input-field" placeholder="e.g. ran 3 miles in 30 mins"
+                value={workoutDescription} onChange={e => setWorkoutDescription(e.target.value)}
+                style={{ flex: 1, background: 'white' }} />
+              <button className="btn btn-primary" onClick={handleAIWorkout} disabled={workoutAiLoading || !workoutDescription.trim()} style={{ padding: '0 16px' }}>
+                {workoutAiLoading ? <Loader2 size={16} className="spinner" /> : <Sparkles size={16} />}
+              </button>
+            </div>
+            {workoutAiError && (
+              <div style={{ fontSize: 12, color: 'var(--lp-amber)', marginTop: 8 }}>{workoutAiError}</div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <hr style={{ flex: 1, borderTop: '1px solid var(--surface-border)' }} />
+            <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>OR ENTER MANUALLY</span>
+            <hr style={{ flex: 1, borderTop: '1px solid var(--surface-border)' }} />
+          </div>
+
           <div className="input-group">
             <label>Workout type</label>
-            <select className="input-field" value={workoutType}
-              onChange={e => setWorkoutType(e.target.value)}>
-              <option value="">Select...</option>
-              <option value="Running">Running</option>
-              <option value="Cycling">Cycling</option>
-              <option value="Weightlifting">Weightlifting</option>
-              <option value="Yoga">Yoga</option>
-              <option value="Swimming">Swimming</option>
-              <option value="Walking">Walking</option>
-              <option value="HIIT">HIIT</option>
-              <option value="Other">Other</option>
-            </select>
+            <input type="text" className="input-field" placeholder="e.g. Running, Yoga"
+              value={workoutType} onChange={e => setWorkoutType(e.target.value)} />
           </div>
           <div className="input-group">
             <label>Duration (minutes)</label>

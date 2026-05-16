@@ -8,7 +8,7 @@ import {
   User, Ruler, Activity, Zap,
 } from 'lucide-react';
 import type { Sex, ActivityLevel, DeficitLevel, UnitSystem } from '@/types';
-import { calculateDailyTarget, getDeficitInfo } from '@/lib/calculations';
+import { calculateCustomDailyTarget } from '@/lib/calculations';
 
 const STEPS = ['basics', 'body', 'activity', 'goal', 'deficit'] as const;
 
@@ -22,7 +22,7 @@ export default function OnboardingPage() {
   const [currentWeightLbs, setCurrentWeightLbs] = useState('185');
   const [goalWeightLbs, setGoalWeightLbs] = useState('165');
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>('lightly_active');
-  const [deficitLevel, setDeficitLevel] = useState<DeficitLevel>('moderate');
+  const [targetWeeks, setTargetWeeks] = useState('12');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -31,8 +31,8 @@ export default function OnboardingPage() {
   const currentWeightKg = Math.round(parseFloat(currentWeightLbs) / 2.20462 * 10) / 10;
   const goalWeightKg = Math.round(parseFloat(goalWeightLbs) / 2.20462 * 10) / 10;
 
-  const dailyTarget = calculateDailyTarget(
-    sex, currentWeightKg, heightCm, parseInt(age), activityLevel, deficitLevel
+  const dailyTarget = calculateCustomDailyTarget(
+    sex, currentWeightKg, goalWeightKg, heightCm, parseInt(age), activityLevel, parseInt(targetWeeks) || 12
   );
 
   async function handleComplete() {
@@ -50,7 +50,7 @@ export default function OnboardingPage() {
       current_weight_kg: currentWeightKg,
       goal_weight_kg: goalWeightKg,
       activity_level: activityLevel,
-      deficit_level: deficitLevel,
+      deficit_level: 'moderate', // DB constraint check bypass
       unit_system: unitSystem,
       daily_calorie_target: dailyTarget,
       onboarding_complete: true,
@@ -81,7 +81,7 @@ export default function OnboardingPage() {
     'Your body',
     'Activity level',
     'Set your goal',
-    'Choose your pace',
+    'Choose your timeframe',
   ];
 
   return (
@@ -238,41 +238,19 @@ export default function OnboardingPage() {
           )}
 
           {step === 4 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {(['gentle', 'moderate', 'aggressive', 'maximum'] as DeficitLevel[]).map((level) => {
-                const info = getDeficitInfo(level);
-                return (
-                  <button key={level}
-                    onClick={() => setDeficitLevel(level)}
-                    className="card"
-                    style={{
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      border: deficitLevel === level
-                        ? '2px solid var(--lp-teal)'
-                        : '1px solid var(--surface-border)',
-                      background: deficitLevel === level
-                        ? 'var(--lp-teal-glow)'
-                        : 'var(--bg-elevated)',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <div style={{ fontSize: 15, fontWeight: 500, textTransform: 'capitalize' }}>{level}</div>
-                        <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>{info.note}</div>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--lp-teal)' }}>{info.weekly}</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>per week</div>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="input-group">
+                <label htmlFor="targetWeeks">How many weeks to reach your goal?</label>
+                <input id="targetWeeks" type="number" className="input-field"
+                  value={targetWeeks} onChange={(e) => setTargetWeeks(e.target.value)}
+                  placeholder="e.g. 12" min="1" max="104" />
+              </div>
               <div className="card" style={{ background: 'var(--lp-teal-glow)', border: 'none', marginTop: 8 }}>
                 <div style={{ fontSize: 13, color: 'var(--lp-teal-dark)', fontWeight: 500 }}>
                   Your daily target: {dailyTarget.toLocaleString()} kcal
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
+                  Pace: {(Math.max(0, parseFloat(currentWeightLbs) - parseFloat(goalWeightLbs)) / (parseInt(targetWeeks) || 12)).toFixed(1)} lbs per week.
                 </div>
               </div>
             </div>

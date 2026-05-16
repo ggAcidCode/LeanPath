@@ -48,6 +48,28 @@ export function calculateDailyTarget(
   return Math.max(target, minCalories);
 }
 
+export function calculateCustomDailyTarget(
+  sex: Sex,
+  weightKg: number,
+  goalWeightKg: number,
+  heightCm: number,
+  age: number,
+  activityLevel: ActivityLevel,
+  targetWeeks: number
+): number {
+  const bmr = calculateBMR(sex, weightKg, heightCm, age);
+  const tdee = calculateTDEE(bmr, activityLevel);
+  
+  // 1 kg fat = ~7700 kcal. Daily deficit needed = (kg to lose * 7700) / (weeks * 7)
+  const weightToLose = Math.max(0, weightKg - goalWeightKg);
+  const totalKcalDeficit = weightToLose * 7700;
+  const dailyDeficit = totalKcalDeficit / (targetWeeks * 7);
+  
+  const target = Math.round(tdee - dailyDeficit);
+  const minCalories = sex === 'female' ? 1200 : 1500;
+  return Math.max(target, minCalories);
+}
+
 export function calculateStepCalories(steps: number, weightKg: number): number {
   // ~0.04 kcal per step per kg of body weight / 100
   return Math.round(steps * weightKg * 0.0004);
