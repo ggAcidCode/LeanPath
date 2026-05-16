@@ -166,21 +166,21 @@ export default function TrendsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: 4, textTransform: 'uppercase' }}>Optimistic</div>
-            <div style={{ fontSize: 14, color: 'var(--text-primary)' }}>If you strictly hit every target</div>
+            <div style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>If you strictly hit every target</div>
           </div>
-          <div className="heading" style={{ fontSize: 18, fontWeight: 700, color: 'var(--lp-teal)' }}>
+          <div className="heading" style={{ fontSize: 20, fontWeight: 800, color: 'var(--lp-teal)' }}>
              {stats.totalLost > 0 ? optDate.toLocaleDateString('en-US', dateFormat) : 'July 28'}
           </div>
         </div>
       </div>
 
-      <div className="card" style={{ padding: '20px 16px', borderLeft: '4px solid var(--lp-blue)', marginBottom: 12, borderRadius: '4px 16px 16px 4px' }}>
+      <div className="card" style={{ padding: '20px 16px', borderLeft: '4px solid var(--lp-blue-light)', marginBottom: 12, borderRadius: '4px 16px 16px 4px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: 4, textTransform: 'uppercase' }}>Realistic</div>
-            <div style={{ fontSize: 14, color: 'var(--text-primary)' }}>Based on your actual 14-day pace</div>
+            <div style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>Based on your actual 14-day pace</div>
           </div>
-          <div className="heading" style={{ fontSize: 18, fontWeight: 700, color: 'var(--lp-blue)' }}>
+          <div className="heading" style={{ fontSize: 20, fontWeight: 800, color: 'var(--lp-blue-light)' }}>
              {stats.totalLost > 0 ? realDate.toLocaleDateString('en-US', dateFormat) : 'Aug 14'}
           </div>
         </div>
