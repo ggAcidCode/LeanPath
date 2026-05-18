@@ -7,7 +7,7 @@ import { formatDate, getTodayString, calculateStepCalories } from '@/lib/calcula
 import {
   Flame, Bell, Settings, Camera, MessageSquare, Search,
   Sun, Salad, Cookie, Plus, Footprints, Dumbbell,
-  TrendingDown, ChevronRight, Sparkles,
+  TrendingDown, ChevronRight, Sparkles, Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -86,6 +86,11 @@ export default function DashboardPage() {
     }
     load();
   }, [supabase, today, router]);
+
+  async function deleteMeal(id: string) {
+    await supabase.from('meal_entries').delete().eq('id', id);
+    setMeals(meals.filter(m => m.id !== id));
+  }
 
   const target = (profile?.daily_calorie_target as number) || 1820;
   const consumed = meals.reduce((sum, m) => sum + m.total_calories, 0);
@@ -348,7 +353,12 @@ export default function DashboardPage() {
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>{itemNames}</div>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 500 }}>{meal.total_calories}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500 }}>{meal.total_calories}</div>
+                  <button onClick={() => deleteMeal(meal.id)} className="btn btn-ghost" style={{ padding: 4, height: 'auto', minHeight: 0 }}>
+                    <Trash2 size={16} color="var(--lp-red)" />
+                  </button>
+                </div>
               </div>
             );
           })

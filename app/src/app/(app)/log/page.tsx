@@ -358,8 +358,21 @@ function LogContent() {
                         {item.quantity} {item.unit} · P {item.protein}g · C {item.carbs}g · F {item.fat}g
                       </div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 15, fontWeight: 600 }}>{item.calories}</div>
+                    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <input
+                          type="number"
+                          className="input-field"
+                          style={{ width: 64, padding: '4px 8px', fontSize: 14, fontWeight: 600, textAlign: 'center', height: 28 }}
+                          value={item.calories}
+                          onChange={(e) => {
+                            const newResult = [...aiResult];
+                            newResult[i].calories = parseInt(e.target.value) || 0;
+                            setAiResult(newResult);
+                          }}
+                        />
+                        <span style={{ fontSize: 12, color: 'var(--text-tertiary)', fontWeight: 500 }}>kcal</span>
+                      </div>
                       <div style={{
                         fontSize: 10, color: item.confidence > 0.8 ? 'var(--lp-teal)' : 'var(--lp-amber)',
                       }}>
