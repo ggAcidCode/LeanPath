@@ -7,7 +7,7 @@ import { formatDate, getTodayString, calculateStepCalories } from '@/lib/calcula
 import {
   Flame, Bell, Settings, Camera, MessageSquare, Search,
   Sun, Salad, Cookie, Plus, Footprints, Dumbbell,
-  TrendingDown, ChevronRight, Sparkles, Trash2,
+  TrendingDown, ChevronRight, ChevronLeft, Sparkles, Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -32,7 +32,7 @@ interface WorkoutData {
 export default function DashboardPage() {
   const router = useRouter();
   const supabase = createClient();
-  const today = getTodayString();
+  const [selectedDate, setSelectedDate] = useState(getTodayString());
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [meals, setMeals] = useState<MealData[]>([]);
   const [workouts, setWorkouts] = useState<WorkoutData[]>([]);
@@ -62,7 +62,7 @@ export default function DashboardPage() {
         .from('meal_entries')
         .select('*')
         .eq('user_id', user.id)
-        .eq('date', today)
+        .eq('date', selectedDate)
         .order('created_at');
       if (mealData) setMeals(mealData as unknown as MealData[]);
 
@@ -70,14 +70,14 @@ export default function DashboardPage() {
         .from('workout_entries')
         .select('*')
         .eq('user_id', user.id)
-        .eq('date', today);
+        .eq('date', selectedDate);
       if (workoutData) setWorkouts(workoutData as unknown as WorkoutData[]);
 
       const { data: stepData } = await supabase
         .from('step_entries')
         .select('*')
         .eq('user_id', user.id)
-        .eq('date', today)
+        .eq('date', selectedDate)
         .maybeSingle();
       if (stepData) {
         setSteps(stepData.step_count);
@@ -85,7 +85,7 @@ export default function DashboardPage() {
       }
     }
     load();
-  }, [supabase, today, router]);
+  }, [supabase, selectedDate, router]);
 
   async function deleteMeal(id: string) {
     await supabase.from('meal_entries').delete().eq('id', id);
@@ -130,20 +130,26 @@ export default function DashboardPage() {
         marginBottom: 20,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 'var(--radius-md)',
-            background: 'linear-gradient(135deg, var(--lp-teal), var(--lp-teal-light))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(29,158,117,0.3)',
-          }}>
-            <Flame size={20} color="white" />
-          </div>
+          <button className="btn btn-ghost" onClick={() => {
+            const d = new Date(selectedDate + 'T12:00:00');
+            d.setDate(d.getDate() - 1);
+            setSelectedDate(d.toISOString().split('T')[0]);
+          }} style={{ padding: 4, width: 'auto', height: 'auto', minHeight: 0 }}>
+            <ChevronLeft size={20} />
+          </button>
           <div>
             <div style={{ fontSize: 16, fontWeight: 600 }}>LeanPath</div>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-              {formatDate(new Date())}
+              {formatDate(new Date(selectedDate + 'T12:00:00'))}
             </div>
           </div>
+          <button className="btn btn-ghost" onClick={() => {
+            const d = new Date(selectedDate + 'T12:00:00');
+            d.setDate(d.getDate() + 1);
+            setSelectedDate(d.toISOString().split('T')[0]);
+          }} disabled={selectedDate === getTodayString()} style={{ padding: 4, width: 'auto', height: 'auto', minHeight: 0, opacity: selectedDate === getTodayString() ? 0.3 : 1 }}>
+            <ChevronRight size={20} />
+          </button>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
           <button className="btn btn-ghost" style={{ width: 36, height: 36, padding: 0 }}
@@ -284,9 +290,9 @@ export default function DashboardPage() {
         gap: 8, marginBottom: 12,
       }}>
         {[
-          { icon: <Camera size={20} />, label: 'Snap meal', href: '/log?method=photo' },
-          { icon: <MessageSquare size={20} />, label: 'Describe', href: '/log?method=describe' },
-          { icon: <Search size={20} />, label: 'Search', href: '/log?method=search' },
+          { icon: <Camera size={20} />, label: 'Snap meal', href: `/log?method=photo&date=${selectedDate}` },
+          { icon: <MessageSquare size={20} />, label: 'Describe', href: `/log?method=describe&date=${selectedDate}` },
+          { icon: <Search size={20} />, label: 'Search', href: `/log?method=search&date=${selectedDate}` },
         ].map(({ icon, label, href }) => (
           <Link key={label} href={href} className="card" style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
@@ -302,8 +308,8 @@ export default function DashboardPage() {
       {/* Today's Meals */}
       <div className="card animate-fade-in-up stagger-5" style={{ marginBottom: 12, padding: '16px 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div style={{ fontSize: 15, fontWeight: 500 }}>Today&apos;s meals</div>
-          <Link href="/log" style={{
+          <div style={{ fontSize: 15, fontWeight: 500 }}>Meals</div>
+          <Link href={`/log?date=${selectedDate}`} style={{
             fontSize: 12, color: 'var(--lp-teal)', textDecoration: 'none',
             display: 'flex', alignItems: 'center', gap: 2,
           }}>
@@ -317,7 +323,7 @@ export default function DashboardPage() {
             color: 'var(--text-tertiary)', fontSize: 14,
           }}>
             <Camera size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
-            <p>No meals logged yet today</p>
+            <p>No meals logged {selectedDate === getTodayString() ? 'yet today' : 'on this date'}</p>
             <p style={{ fontSize: 12, marginTop: 4 }}>Tap a quick action above to get started</p>
           </div>
         ) : (
@@ -369,7 +375,7 @@ export default function DashboardPage() {
       <div className="card animate-fade-in-up stagger-6" style={{ padding: '16px 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <div style={{ fontSize: 15, fontWeight: 500 }}>Activity</div>
-          <Link href="/log?method=workout" className="btn btn-ghost" style={{ padding: '4px 10px', fontSize: 12 }}>
+          <Link href={`/log?method=workout&date=${selectedDate}`} className="btn btn-ghost" style={{ padding: '4px 10px', fontSize: 12 }}>
             <Plus size={12} /> Add workout
           </Link>
         </div>

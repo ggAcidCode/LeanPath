@@ -15,6 +15,7 @@ import type { MealSlot } from '@/types';
 function LogContent() {
   const searchParams = useSearchParams();
   const method = searchParams.get('method') || 'search';
+  const targetDate = searchParams.get('date') || getTodayString();
   const router = useRouter();
   const supabase = createClient();
 
@@ -144,7 +145,7 @@ function LogContent() {
 
     await supabase.from('meal_entries').insert({
       user_id: user.id,
-      date: getTodayString(),
+      date: targetDate,
       meal_slot: mealSlot,
       items: items.map(i => ({
         food: { name: i.name, calories: i.calories, protein: i.protein, carbs: i.carbs, fat: i.fat },
@@ -178,7 +179,7 @@ function LogContent() {
     const count = parseInt(stepCount) || 0;
     await supabase.from('step_entries').upsert({
       user_id: user.id,
-      date: getTodayString(),
+      date: targetDate,
       step_count: count,
       calories_burned: Math.round(count * 0.04),
     });
@@ -195,7 +196,7 @@ function LogContent() {
     const calMultiplier = workoutIntensity === 'low' ? 4 : workoutIntensity === 'moderate' ? 6 : 9;
     await supabase.from('workout_entries').insert({
       user_id: user.id,
-      date: getTodayString(),
+      date: targetDate,
       type: workoutType || 'General',
       duration_min: duration,
       intensity: workoutIntensity,

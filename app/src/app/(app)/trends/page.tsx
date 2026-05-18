@@ -104,6 +104,26 @@ export default function TrendsPage() {
   
   const dateFormat = { month: 'short', day: 'numeric' } as const;
 
+  // Chart Calculations
+  let chartPoints: string[] = [];
+  let goalYPercent = 20;
+  
+  if (weightData.length > 0 && profile) {
+    const goalW = profile.unit_system === 'imperial' ? profile.goal_weight_kg * 2.20462 : profile.goal_weight_kg;
+    const minWeight = Math.min(...weightData.map(w => w.weight), goalW) - 2;
+    const maxWeight = Math.max(...weightData.map(w => w.weight), goalW) + 2;
+    const weightRange = Math.max(1, maxWeight - minWeight);
+    
+    chartPoints = weightData.map((d, i) => {
+      const x = weightData.length > 1 ? (i / (weightData.length - 1)) * 100 : 50;
+      const y = 100 - ((d.weight - minWeight) / weightRange) * 100;
+      return `${x},${y}`;
+    });
+    
+    let gy = ((goalW - minWeight) / weightRange) * 100;
+    goalYPercent = Math.max(0, Math.min(100, gy));
+  }
+
   return (
     <div style={{ padding: '16px', paddingBottom: 100 }}>
       {/* Header */}
@@ -147,14 +167,17 @@ export default function TrendsPage() {
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Last 30 Days</span>
       </div>
       <div className="card" style={{ marginBottom: 16, height: 220, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', paddingBottom: 40 }}>
-        {/* Mock Chart lines */}
+        {/* Real Line Chart */}
         <div style={{ position: 'absolute', left: 20, right: 20, top: 40, bottom: 40 }}>
           {/* Dashed Goal Line */}
-          <div style={{ position: 'absolute', bottom: 20, left: 0, right: 0, borderBottom: '2px dashed var(--lp-amber)', opacity: 0.8 }} />
+          <div style={{ position: 'absolute', bottom: `${goalYPercent}%`, left: 0, right: 0, borderBottom: '2px dashed var(--lp-amber)', opacity: 0.8 }} />
           
-          {/* Mock SVG Line Chart for exact look */}
-          <svg width="100%" height="100%" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
-            <path d="M 0 30 Q 80 40 160 80 T 320 120" fill="none" stroke="var(--lp-teal)" strokeWidth="3" strokeLinecap="round" />
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, overflow: 'visible', width: '100%', height: '100%' }}>
+            {chartPoints.length > 0 ? (
+              <polyline points={chartPoints.join(' ')} fill="none" stroke="var(--lp-teal)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            ) : (
+              <path d="M 0 30 Q 25 40 50 80 T 100 120" fill="none" stroke="var(--lp-teal)" strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+            )}
           </svg>
         </div>
         
