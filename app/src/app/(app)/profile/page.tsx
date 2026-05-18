@@ -99,7 +99,7 @@ export default function ProfilePage() {
       title: 'Goal settings',
       icon: <Target size={16} />,
       items: [
-        { label: 'Daily target', value: `${(profile.daily_calorie_target as number)?.toLocaleString()} kcal`, field: null },
+        { label: 'Daily target', value: `${(profile.daily_calorie_target as number)?.toLocaleString()} kcal`, field: 'daily_calorie_target' },
         { label: 'Deficit pace', value: `${(profile.deficit_level as string)?.charAt(0).toUpperCase()}${(profile.deficit_level as string)?.slice(1)} (${deficitInfo?.weekly}/wk)`, field: 'deficit_level' },
         { label: 'Activity level', value: `${(profile.activity_level as string)?.replace('_', ' ')}`, field: 'activity_level' },
       ],
@@ -145,6 +145,12 @@ export default function ProfilePage() {
                 if (item.field === 'weight') {
                   setEditing('weight');
                   setEditValue(String(Math.round(kgToLbs(profile.current_weight_kg as number))));
+                } else if (item.field === 'goal_weight_kg') {
+                  setEditing('goal_weight_kg');
+                  setEditValue(String(Math.round(kgToLbs(profile.goal_weight_kg as number))));
+                } else if (item.field === 'daily_calorie_target') {
+                  setEditing('daily_calorie_target');
+                  setEditValue(String(profile.daily_calorie_target || 2000));
                 } else if (item.field) {
                   setEditing(item.field);
                 }
@@ -184,6 +190,46 @@ export default function ProfilePage() {
             </div>
             <button className="btn btn-primary btn-full" onClick={logWeight} disabled={saving}>
               {saving ? <span className="spinner" /> : 'Save weight'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit goal weight modal */}
+      {editing === 'goal_weight_kg' && (
+        <div className="modal-overlay" onClick={() => setEditing(null)}>
+          <div className="modal-sheet" onClick={e => e.stopPropagation()}>
+            <div className="modal-handle" />
+            <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Target size={20} color="var(--lp-teal)" /> Goal weight
+            </h3>
+            <div className="input-group" style={{ marginBottom: 20 }}>
+              <label>Goal Weight (lbs)</label>
+              <input type="number" className="input-field" value={editValue}
+                onChange={e => setEditValue(e.target.value)} autoFocus step="0.1" />
+            </div>
+            <button className="btn btn-primary btn-full" onClick={() => saveField('goal_weight_kg', parseFloat(editValue) / 2.20462)} disabled={saving}>
+              {saving ? <span className="spinner" /> : 'Save goal'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit daily calorie target modal */}
+      {editing === 'daily_calorie_target' && (
+        <div className="modal-overlay" onClick={() => setEditing(null)}>
+          <div className="modal-sheet" onClick={e => e.stopPropagation()}>
+            <div className="modal-handle" />
+            <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Flame size={20} color="var(--lp-teal)" /> Daily calorie target
+            </h3>
+            <div className="input-group" style={{ marginBottom: 20 }}>
+              <label>Target (kcal)</label>
+              <input type="number" className="input-field" value={editValue}
+                onChange={e => setEditValue(e.target.value)} autoFocus step="10" />
+            </div>
+            <button className="btn btn-primary btn-full" onClick={() => saveField('daily_calorie_target', parseInt(editValue))} disabled={saving}>
+              {saving ? <span className="spinner" /> : 'Save target'}
             </button>
           </div>
         </div>

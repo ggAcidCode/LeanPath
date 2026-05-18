@@ -90,8 +90,14 @@ export default function TrendsPage() {
   const progressPercent = Math.min(100, Math.max(0, Math.round((stats.totalLost / (stats.totalToLose || 1)) * 100)));
   
   // Calculate projected date (optimistic: 1.5 lb/week, realistic: based on actual deficit)
-  const optDays = (stats.totalToLose - stats.totalLost) / 1.5 * 7;
-  const realDays = (stats.totalToLose - stats.totalLost) / (stats.avgDeficit > 0 ? (stats.avgDeficit * 7 / 3500) : 0.5) * 7;
+  const hasReachedGoal = stats.totalToLose > 0 && stats.totalLost >= stats.totalToLose;
+  const remainingLbs = Math.max(0, stats.totalToLose - stats.totalLost);
+
+  const optPaceLbsPerWeek = 1.5;
+  const realPaceLbsPerWeek = stats.avgDeficit > 0 ? (stats.avgDeficit * 7 / 3500) : 0;
+
+  const optDays = remainingLbs / optPaceLbsPerWeek * 7;
+  const realDays = realPaceLbsPerWeek > 0 ? (remainingLbs / realPaceLbsPerWeek) * 7 : -1;
   
   const optDate = new Date(); optDate.setDate(optDate.getDate() + optDays);
   const realDate = new Date(); realDate.setDate(realDate.getDate() + realDays);
@@ -169,19 +175,19 @@ export default function TrendsPage() {
             <div style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>If you strictly hit every target</div>
           </div>
           <div className="heading" style={{ fontSize: 20, fontWeight: 800, color: 'var(--lp-teal)' }}>
-             {stats.totalLost > 0 ? optDate.toLocaleDateString('en-US', dateFormat) : 'July 28'}
+             {hasReachedGoal ? 'Goal Reached!' : optDate.toLocaleDateString('en-US', dateFormat)}
           </div>
         </div>
       </div>
 
-      <div className="card" style={{ padding: '20px 16px', borderLeft: '4px solid var(--lp-blue-light)', marginBottom: 12, borderRadius: '4px 16px 16px 4px' }}>
+      <div className="card" style={{ padding: '20px 16px', borderLeft: '4px solid var(--lp-teal-light)', marginBottom: 12, borderRadius: '4px 16px 16px 4px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: 4, textTransform: 'uppercase' }}>Realistic</div>
             <div style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>Based on your actual 14-day pace</div>
           </div>
-          <div className="heading" style={{ fontSize: 20, fontWeight: 800, color: 'var(--lp-blue-light)' }}>
-             {stats.totalLost > 0 ? realDate.toLocaleDateString('en-US', dateFormat) : 'Aug 14'}
+          <div className="heading" style={{ fontSize: 20, fontWeight: 800, color: 'var(--lp-teal-light)' }}>
+             {hasReachedGoal ? 'Goal Reached!' : (realPaceLbsPerWeek > 0 ? realDate.toLocaleDateString('en-US', dateFormat) : 'Pace too slow')}
           </div>
         </div>
       </div>
